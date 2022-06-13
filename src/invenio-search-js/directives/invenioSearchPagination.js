@@ -65,11 +65,85 @@ function invenioSearchPagination() {
         };
       };
 
+      var pagesToBeProcessed = [];
+      var lastSetOfPageToBeProcessed = [];
+
       // Add our items where i is the page number
       for (var i = start; i <= finish; i++) {
         var item = buildItem(i);
-        scope.paginatePages.push(item);
+
+        var fivePagesBeforeSearchAfter =
+          Math.floor(attrs.maxResultWindow / vm.invenioSearchArgs.size) - 5;
+        var currentPageBeingDisplayed = vm.invenioSearchArgs.page;
+        var lastPageBeforeSearchAfter = fivePagesBeforeSearchAfter + 5;
+
+        if (i <= lastPageBeforeSearchAfter) {
+          if (finish - i <= 10) {
+            lastSetOfPageToBeProcessed.push(item);
+            if (i + 1 === finish) {
+              pagesToBeDisplayed.push(lastSetOfPageToBeProcessed);
+            }
+          } else if (pagesToBeProcessed.length === 10) {
+            pagesToBeDisplayed.push(pagesToBeProcessed);
+            pagesToBeProcessed = [];
+          } else {
+            pagesToBeProcessed.push(item);
+          }
+        }
+
+        if (fivePagesBeforeSearchAfter <= currentPageBeingDisplayed) {
+          if (currentPageBeingDisplayed <= lastPageBeforeSearchAfter) {
+            pagesToBeDisplayed = [];
+            pagesToBeProcessed = [];
+            pagesToBeProcessed.push(buildItem(lastPageBeforeSearchAfter - 9));
+            pagesToBeProcessed.push(buildItem(lastPageBeforeSearchAfter - 8));
+            pagesToBeProcessed.push(buildItem(lastPageBeforeSearchAfter - 7));
+            pagesToBeProcessed.push(buildItem(lastPageBeforeSearchAfter - 6));
+            pagesToBeProcessed.push(buildItem(lastPageBeforeSearchAfter - 5));
+            pagesToBeProcessed.push(buildItem(lastPageBeforeSearchAfter - 4));
+            pagesToBeProcessed.push(buildItem(lastPageBeforeSearchAfter - 3));
+            pagesToBeProcessed.push(buildItem(lastPageBeforeSearchAfter - 2));
+            pagesToBeProcessed.push(buildItem(lastPageBeforeSearchAfter - 1));
+            pagesToBeProcessed.push(buildItem(lastPageBeforeSearchAfter));
+            pagesToBeDisplayed.push(pagesToBeProcessed);
+          }
+        }
+
+        if (currentPageBeingDisplayed > lastPageBeforeSearchAfter) {
+          pagesToBeDisplayed = [];
+          pagesToBeProcessed = [];
+          pagesToBeProcessed.push(buildItem(currentPageBeingDisplayed - 9));
+          pagesToBeProcessed.push(buildItem(currentPageBeingDisplayed - 8));
+          pagesToBeProcessed.push(buildItem(currentPageBeingDisplayed - 7));
+          pagesToBeProcessed.push(buildItem(currentPageBeingDisplayed - 6));
+          pagesToBeProcessed.push(buildItem(currentPageBeingDisplayed - 5));
+          pagesToBeProcessed.push(buildItem(currentPageBeingDisplayed - 4));
+          pagesToBeProcessed.push(buildItem(currentPageBeingDisplayed - 3));
+          pagesToBeProcessed.push(buildItem(currentPageBeingDisplayed - 2));
+          pagesToBeProcessed.push(buildItem(currentPageBeingDisplayed - 1));
+          pagesToBeProcessed.push(buildItem(currentPageBeingDisplayed));
+          pagesToBeDisplayed.push(pagesToBeProcessed);
+        }
       }
+
+      pagesToBeDisplayed.forEach((item) => {
+        const pageArray = Object.values(item);
+        const pageItemObject = pageArray.map((pageItem) => {
+          return pageItem["value"];
+        });
+
+        if (pageItemObject.includes(start)) {
+          item.forEach((page) => {
+            if (page.value <= lastPageBeforeSearchAfter) {
+              scope.paginatePages.push(page);
+            } else {
+              if (page.value <= currentPageBeingDisplayed) {
+                scope.paginatePages.push(page);
+              }
+            }
+          });
+        }
+      });
     }
 
     /**
@@ -86,7 +160,7 @@ function invenioSearchPagination() {
       // Get the current page
       var _current = current();
       // Display the adjacent a1 a2 a3 + current + a5 a6 a7
-      var adjacentSize = (2 * adjacent);
+      var adjacentSize = 2 * adjacent + 1;
 
       // Pages to show in the pagination
       var start, finish;
@@ -104,8 +178,12 @@ function invenioSearchPagination() {
           finish = _current + adjacent;
           addRange(start, finish);
         } else {
-          start = pageCount - adjacentSize;
-          finish = pageCount;
+          start = _current - adjacent;
+          if (_current <= pageCount - 5) {
+            finish = _current + adjacent;
+          } else {
+            finish = pageCount;
+          }
           addRange(start, finish);
         }
       }
@@ -197,7 +275,11 @@ function invenioSearchPagination() {
       * @memberof link
       */
     function getLastClass() {
-      return current() !== total() ? '' : 'disabled';
+      return current() <
+        Math.floor(attrs.maxResultWindow / vm.invenioSearchArgs.size)
+        ? ""
+        : "disabled";
+      /*return current() !== total() ? '' : 'disabled';*/
     }
 
     /**
@@ -208,8 +290,12 @@ function invenioSearchPagination() {
     function changePage(index) {
       if (index > total()) {
         vm.invenioSearchArgs.page = total();
-      } else if ( index < 1) {
+      } else if (index < 1) {
         vm.invenioSearchArgs.page = 1;
+      } else if (index == "page_before_search_after") {
+        vm.invenioSearchArgs.page = Math.floor(
+          attrs.maxResultWindow / vm.invenioSearchArgs.size
+        );
       } else {
         vm.invenioSearchArgs.page = index;
       }
