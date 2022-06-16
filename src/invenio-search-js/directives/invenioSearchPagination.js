@@ -65,6 +65,7 @@ function invenioSearchPagination() {
         };
       };
 
+      var pagesToBeDisplayed = [];
       var pagesToBeProcessed = [];
       var lastSetOfPageToBeProcessed = [];
 
@@ -126,14 +127,14 @@ function invenioSearchPagination() {
         }
       }
 
-      pagesToBeDisplayed.forEach((item) => {
+      pagesToBeDisplayed.forEach(function(item) {
         const pageArray = Object.values(item);
-        const pageItemObject = pageArray.map((pageItem) => {
+        const pageItemObject = pageArray.map(function(pageItem) {
           return pageItem["value"];
         });
 
         if (pageItemObject.includes(start)) {
-          item.forEach((page) => {
+          item.forEach(function(page) {
             if (page.value <= lastPageBeforeSearchAfter) {
               scope.paginatePages.push(page);
             } else {

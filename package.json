@@ -14,7 +14,8 @@
     "angular": "=1.4.8",
     "angular-mocks": "=1.4.8",
     "angular-scenario": "=1.4.8",
-    "d3": "^3.5.17"
+    "d3": "^3.5.17",
+    "phantomjs-prebuilt": "^2.1.16"
   },
   "devDependencies": {
     "chai": "^3.5.0",
@@ -51,7 +52,7 @@
     "mocha": "^3.1.2",
     "phantomjs": "^2.1.7",
     "run-sequence": "^1.0.2",
-    "sinon": "^1.10.3",
+    "sinon": "^3.0.0",
     "sinon-chai": "^2.5.0"
   },
   "engines": {
