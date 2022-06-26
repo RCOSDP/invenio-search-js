@@ -14,7 +14,7 @@ libpeerconnection.log
 # OS-specific
 .DS_Store
 
-dist/
+#dist/
 coverage/
 docs/
 
