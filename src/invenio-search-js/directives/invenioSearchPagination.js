@@ -294,9 +294,10 @@ function invenioSearchPagination() {
       } else if (index < 1) {
         vm.invenioSearchArgs.page = 1;
       } else if (index == "page_before_search_after") {
-        vm.invenioSearchArgs.page = Math.floor(
-          attrs.maxResultWindow / vm.invenioSearchArgs.size
-        );
+        vm.invenioSearchArgs.page = Math.floor(attrs.maxResultWindow / vm.invenioSearchArgs.size);
+        if (total() < vm.invenioSearchArgs.page) {
+          vm.invenioSearchArgs.page = total();
+        }
       } else {
         vm.invenioSearchArgs.page = index;
       }
