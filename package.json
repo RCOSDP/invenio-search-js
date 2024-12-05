@@ -14,8 +14,7 @@
     "angular": "=1.4.8",
     "angular-mocks": "=1.4.8",
     "angular-scenario": "=1.4.8",
-    "d3": "^3.5.17",
-    "phantomjs-prebuilt": "^2.1.16"
+    "d3": "^3.5.17"
   },
   "devDependencies": {
     "chai": "^3.5.0",
